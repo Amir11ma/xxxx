@@ -2,1482 +2,223 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
+<title>بازی دوز</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>دوز حرفه‌ای</title>
-<link href="https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root {
-    --primary-color: #4CAF50;
-    --secondary-color: #ff9800;
-    --accent-color: #2196F3;
-    --win-color: #FFD700;
-    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --text-dark: #333;
-    --text-light: #fff;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Vazir', Tahoma, sans-serif;
-}
-
-body {
-    background: var(--bg-gradient);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 15px;
-    direction: rtl;
-}
-
-.container {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    padding: 20px;
-    gap: 20px;
-}
-
-/* استایل‌های هدر و لوگو */
-.header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.logo {
-    font-size: 3rem;
-    margin-bottom: 10px;
-    color: var(--win-color);
-    text-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-h1 {
-    color: var(--text-light);
-    text-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    margin-bottom: 15px;
-    text-align: center;
-    font-size: clamp(24px, 5vw, 32px);
-}
-
-/* استایل‌های عمومی */
-input {
-    padding: 12px 15px;
-    font-size: 16px;
-    border-radius: 12px;
-    border: 2px solid var(--primary-color);
-    margin-bottom: 20px;
-    width: 90%;
-    max-width: 350px;
-    text-align: center;
-    background: var(--card-bg);
-    transition: all 0.3s ease;
-}
-
-input:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
-}
-
-button {
-    margin: 8px;
-    padding: 15px 25px;
-    font-size: 16px;
-    border: none;
-    border-radius: 15px;
-    background: linear-gradient(45deg, var(--primary-color), #45a049);
-    color: var(--text-light);
-    width: 90%;
-    max-width: 350px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    font-weight: bold;
-}
-
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-}
-
-button:active {
-    transform: translateY(0);
-}
-
-button.secondary {
-    background: linear-gradient(45deg, var(--secondary-color), #f57c00);
-}
-
-button.tertiary {
-    background: linear-gradient(45deg, var(--accent-color), #1976D2);
-}
-
-button.danger {
-    background: linear-gradient(45deg, #f44336, #d32f2f);
-}
-
-/* استایل‌های تخته بازی */
-.board-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    width: 100%;
-}
-
-#board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 10px;
-    margin: 0 auto;
-    background: rgba(255,255,255,0.1);
-    padding: 20px;
-    border-radius: 20px;
-    max-width: 400px;
-    width: 100%;
-    aspect-ratio: 1;
-}
-
-.cell {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--card-bg);
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: clamp(30px, 8vw, 50px);
-    font-weight: bold;
-    aspect-ratio: 1;
-}
-
-.cell:hover {
-    transform: scale(1.05);
-    background: #e8f5e8;
-}
-
-.cell.winning-cell {
-    background: linear-gradient(45deg, var(--win-color), #FFA500);
-    color: var(--text-light);
-    animation: glow 0.6s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-    from { box-shadow: 0 0 10px var(--win-color); }
-    to { box-shadow: 0 0 20px #FFA500; }
-}
-
-/* استایل‌های پیام‌ها */
-#turnMsg {
-    font-size: clamp(18px, 4vw, 22px);
-    margin: 15px;
-    color: var(--text-light);
-    font-weight: bold;
-    text-align: center;
-    background: rgba(255,255,255,0.2);
-    padding: 12px 25px;
-    border-radius: 25px;
-    backdrop-filter: blur(10px);
-}
-
-#resultOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.9);
-    color: var(--text-light);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-}
-
-.result-content {
-    background: var(--card-bg);
-    color: var(--text-dark);
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    max-width: 90%;
-    width: 400px;
-    border: 3px solid var(--win-color);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-#resultText {
-    font-size: clamp(24px, 5vw, 32px);
-    margin-bottom: 15px;
-    color: var(--primary-color);
-    font-weight: bold;
-}
-
-.win-explanation {
-    font-size: clamp(16px, 4vw, 20px);
-    margin: 15px 0;
-    color: var(--accent-color);
-    font-weight: bold;
-}
-
-/* استایل‌های کارت‌ها */
-.leaderboard, .profile-section, .stats-card {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 25px;
-    margin: 15px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-}
-
-.leaderboard h2, .profile-section h2 {
-    color: var(--primary-color);
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: clamp(20px, 4vw, 24px);
-}
-
-.leaderboard-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    border-bottom: 2px solid #f0f0f0;
-    transition: background 0.3s ease;
-}
-
-.leaderboard-item:hover {
-    background: #f8f8f8;
-    border-radius: 8px;
-}
-
-.leaderboard-item:last-child {
-    border-bottom: none;
-}
-
-.player-name {
-    font-weight: bold;
-    color: var(--text-dark);
-    font-size: 16px;
-}
-
-.player-score {
-    color: var(--primary-color);
-    font-weight: bold;
-    font-size: 18px;
-}
-
-/* استایل‌های پروفایل */
-.profile-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.profile-name {
-    font-size: clamp(20px, 4vw, 24px);
-    color: var(--text-dark);
-    margin-bottom: 10px;
-}
-
-.profile-trophy {
-    font-size: 3rem;
-    color: var(--win-color);
-    margin-bottom: 15px;
-}
-
-.skill-level {
-    background: linear-gradient(45deg, var(--primary-color), #45a049);
-    color: var(--text-light);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 16px;
-    margin-bottom: 20px;
-    display: inline-block;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.stat-item {
-    background: #f8f8f8;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.stat-item:hover {
-    transform: translateY(-3px);
-}
-
-.stat-value {
-    font-size: clamp(20px, 4vw, 24px);
-    font-weight: bold;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-}
-
-.stat-label {
-    font-size: 14px;
-    color: #666;
-}
-
-/* استایل‌های تاریخچه */
-.history-item {
-    background: #f8f8f8;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 10px;
-    border-right: 4px solid var(--primary-color);
-    transition: transform 0.3s ease;
-}
-
-.history-item:hover {
-    transform: translateX(-5px);
-}
-
-.history-win {
-    border-right-color: var(--primary-color);
-}
-
-.history-loss {
-    border-right-color: #f44336;
-}
-
-.history-draw {
-    border-right-color: var(--secondary-color);
-}
-
-.rank-badge {
-    background: linear-gradient(45deg, var(--win-color), #FFA500);
-    color: var(--text-light);
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-/* استایل‌های کنترل‌های بازی */
-.game-controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.game-controls button {
-    width: auto;
-    min-width: 140px;
-    margin: 5px;
-    flex: 1;
-}
-
-/* استایل‌های دکمه‌های منو */
-.menu-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    width: 100%;
-    max-width: 800px;
-}
-
-.menu-card {
-    background: var(--card-bg);
-    border-radius: 15px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.menu-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-}
-
-.menu-icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
-    color: var(--accent-color);
-}
-
-.menu-title {
-    font-size: 20px;
-    color: var(--text-dark);
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-.menu-description {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.5;
-}
-
-/* استایل‌های رسپانسیو */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .menu-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-    
-    .game-controls {
+    body {
+        font-family: Tahoma, sans-serif;
+        background-color: #40E0D0; /* آبی فیروزه‌ای */
+        display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: flex-start;
+        height: 100vh;
+        margin: 0;
+        padding: 10px;
+        color: #fff;
     }
-    
-    .game-controls button {
-        width: 90%;
+    h1 { margin: 10px; font-size: 24px; text-align:center; }
+    #playerName { margin: 10px; font-size: 16px; text-align:center; }
+    #changeNameBtn { margin-left: 5px; cursor: pointer; font-size: 14px; }
+    #levelSelection button {
+        margin: 5px; padding: 8px 12px; font-size: 14px;
+        border: none; border-radius: 5px; cursor: pointer;
     }
-    
     #board {
-        padding: 15px;
-        grid-gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(3, 90px);
+        grid-template-rows: repeat(3, 90px);
+        gap: 4px;
+        margin-top: 20px;
     }
-    
     .cell {
-        border-radius: 12px;
+        background-color: #008B8B;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        cursor: pointer;
+        transition: 0.3s;
     }
-}
-
-@media (max-width: 480px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .leaderboard, .profile-section, .stats-card {
-        padding: 15px;
-        margin: 10px;
-    }
-    
-    button {
-        padding: 12px 20px;
-        font-size: 14px;
-    }
-    
-    .menu-card {
-        padding: 20px;
-    }
-}
-
-/* استایل‌های انیمیشن */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.container {
-    animation: slideIn 0.5s ease-out;
-}
-
-/* استایل‌های پیشرفت */
-.progress-bar {
-    width: 100%;
-    height: 10px;
-    background: #f0f0f0;
-    border-radius: 5px;
-    margin: 10px 0;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
-    border-radius: 5px;
-    transition: width 0.5s ease;
-}
-
-/* استایل‌های تایمر */
-.timer {
-    font-size: 14px;
-    color: var(--text-light);
-    background: rgba(0,0,0,0.3);
-    padding: 5px 10px;
-    border-radius: 15px;
-    margin-top: 10px;
-}
-
-/* استایل‌های حالت شب */
-body.night-mode {
-    --bg-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    --card-bg: rgba(44, 62, 80, 0.95);
-    --text-dark: #ecf0f1;
-    --text-light: #ecf0f1;
-}
-
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background: var(--card-bg);
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    z-index: 1000;
-}
-
-/* استایل‌های اسکلتون برای لودینگ */
-.skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
-}
+    .cell:hover { background-color: #20B2AA; }
+    #result { margin-top: 20px; font-size: 18px; text-align:center; }
 </style>
 </head>
 <body>
 
-<!-- دکمه تغییر تم -->
-<button class="theme-toggle" onclick="toggleTheme()">
-    <i class="fas fa-moon"></i>
-</button>
+<h1>بازی دوز</h1>
+<div id="playerName">نام شما: <span id="nameDisplay">بازیکن</span> 
+<button id="changeNameBtn">تغییر نام</button></div>
 
-<!-- صفحه ورود اسم -->
-<div id="lobby" class="container" style="display:flex;">
-    <div class="header">
-        <div class="logo">🎯</div>
-        <h1>بازی دوز حرفه‌ای</h1>
-    </div>
-    <input type="text" id="playerName" placeholder="اسم بازیکن را وارد کنید" onkeypress="handleEnterKey(event)">
-    <button onclick="showGameOptions()">
-        <i class="fas fa-play"></i> شروع بازی
-    </button>
+<div id="levelSelection">
+    <button onclick="setLevel('easy')">آسان</button>
+    <button onclick="setLevel('medium')">متوسط</button>
+    <button onclick="setLevel('hard')">سخت</button>
+    <button onclick="setLevel('ai_unbeatable')">AI بی‌حریف</button>
 </div>
 
-<!-- صفحه اصلی منو -->
-<div id="mainMenu" class="container">
-    <div class="header">
-        <div class="logo">🌟</div>
-        <h1>به دوز خوش آمدید</h1>
-    </div>
-    <div class="menu-grid">
-        <div class="menu-card" onclick="showGameOptions()">
-            <div class="menu-icon"><i class="fas fa-gamepad"></i></div>
-            <div class="menu-title">شروع بازی جدید</div>
-            <div class="menu-description">انتخاب بین بازی با ربات یا دو نفره</div>
-        </div>
-        <div class="menu-card" onclick="showProfile()">
-            <div class="menu-icon"><i class="fas fa-user"></i></div>
-            <div class="menu-title">پروفایل من</div>
-            <div class="menu-description">مشاهده آمار و تاریخچه بازی‌ها</div>
-        </div>
-        <div class="menu-card" onclick="showLeaderboard()">
-            <div class="menu-icon"><i class="fas fa-trophy"></i></div>
-            <div class="menu-title">جدول برترین‌ها</div>
-            <div class="menu-description">مشاهده رتبه‌بندی بازیکنان</div>
-        </div>
-        <div class="menu-card" onclick="showSettings()">
-            <div class="menu-icon"><i class="fas fa-cog"></i></div>
-            <div class="menu-title">تنظیمات</div>
-            <div class="menu-description">شخصی‌سازی بازی و تنظیمات پیشرفته</div>
-        </div>
-    </div>
-</div>
+<div id="board"></div>
+<div id="result"></div>
+<p style="margin-top:10px;font-size:12px;text-align:center;">این بازی به درخواست مدیر برنامک ایتا ساخته شده</p>
 
-<!-- صفحه انتخاب نوع بازی -->
-<div id="gameOptions" class="container">
-    <div class="header">
-        <h1>🎯 انتخاب نوع بازی</h1>
-    </div>
-    <div class="menu-grid">
-        <div class="menu-card" onclick="startSinglePlayer()">
-            <div class="menu-icon"><i class="fas fa-robot"></i></div>
-            <div class="menu-title">بازی با ربات</div>
-            <div class="menu-description">حریف هوشمند با سطوح مختلف</div>
-        </div>
-        <div class="menu-card" onclick="startTwoPlayers()">
-            <div class="menu-icon"><i class="fas fa-users"></i></div>
-            <div class="menu-title">بازی دو نفره</div>
-            <div class="menu-description">روی یک دستگاه با دوستان بازی کنید</div>
-        </div>
-    </div>
-    <button onclick="showMainMenu()" class="secondary">
-        <i class="fas fa-arrow-right"></i> بازگشت به منو
-    </button>
-</div>
-
-<!-- صفحه پروفایل -->
-<div id="profile" class="container">
-    <div class="profile-section">
-        <div class="profile-header">
-            <div class="profile-trophy">🏆</div>
-            <div class="profile-name" id="profileName">...</div>
-            <div class="skill-level" id="skillLevel">مهارت: در حال محاسبه...</div>
-            <div class="rank-badge" id="rankBadge">رتبه: -</div>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-value" id="totalPoints">0</div>
-                <div class="stat-label">امتیاز کل</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="winRate">0%</div>
-                <div class="stat-label">درصد برد</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="totalGames">0</div>
-                <div class="stat-label">تعداد بازی</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="skillPercent">0%</div>
-                <div class="stat-label">مهارت کلی</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="skillProgress"></div>
-                </div>
-            </div>
-        </div>
-        
-        <h3><i class="fas fa-history"></i> تاریخچه آخرین بازی‌ها</h3>
-        <div id="gameHistory"></div>
-    </div>
-    <button onclick="showMainMenu()" class="secondary">
-        <i class="fas fa-arrow-right"></i> بازگشت به منو
-    </button>
-</div>
-
-<!-- صفحه جدول برترین‌ها -->
-<div id="leaderboard" class="container">
-    <div class="header">
-        <h1>🏆 جدول برترین بازیکنان</h1>
-    </div>
-    <div class="leaderboard">
-        <h2><i class="fas fa-robot"></i> رتبه‌بندی ربات</h2>
-        <div id="singleLeaderboard"></div>
-    </div>
-    <button onclick="showMainMenu()" class="secondary">
-        <i class="fas fa-arrow-right"></i> بازگشت به منو
-    </button>
-</div>
-
-<!-- صفحه تنظیمات -->
-<div id="settings" class="container">
-    <div class="profile-section">
-        <h2><i class="fas fa-cog"></i> تنظیمات بازی</h2>
-        
-        <div class="setting-item">
-            <label>سطح دشواری ربات:</label>
-            <select id="difficulty" onchange="changeDifficulty()">
-                <option value="easy">آسان</option>
-                <option value="medium" selected>متوسط</option>
-                <option value="hard">سخت</option>
-            </select>
-        </div>
-        
-        <div class="setting-item">
-            <label>نمایش انیمیشن:</label>
-            <input type="checkbox" id="animations" checked onchange="toggleAnimations()">
-        </div>
-        
-        <div class="setting-item">
-            <label>صدای بازی:</label>
-            <input type="checkbox" id="sound" checked onchange="toggleSound()">
-        </div>
-        
-        <div class="setting-item">
-            <label>تغییر نام بازیکن:</label>
-            <input type="text" id="newPlayerName" placeholder="نام جدید">
-            <button onclick="changePlayerName()" class="tertiary">تغییر نام</button>
-        </div>
-        
-        <button onclick="resetStats()" class="danger">
-            <i class="fas fa-trash"></i> ریست آمار
-        </button>
-    </div>
-    <button onclick="showMainMenu()" class="secondary">
-        <i class="fas fa-arrow-right"></i> بازگشت به منو
-    </button>
-</div>
-
-<!-- صفحه بازی -->
-<div id="game" class="container">
-    <div class="board-container">
-        <h1 id="gameTitle">تخته دوز</h1>
-        <div id="turnMsg"></div>
-        <div id="board"></div>
-        <div class="game-info">
-            <div class="timer" id="gameTimer">زمان: 00:00</div>
-        </div>
-        <div class="game-controls">
-            <button onclick="showGameOptions()" class="secondary">
-                <i class="fas fa-arrow-right"></i> بازگشت
-            </button>
-            <button onclick="restartSameGame()" class="tertiary">
-                <i class="fas fa-redo"></i> بازی مجدد
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- overlay نتیجه بازی -->
-<div id="resultOverlay">
-    <div class="result-content">
-        <div id="resultText"></div>
-        <div id="winExplanation" class="win-explanation"></div>
-        <div class="game-controls">
-            <button onclick="restartSameGame()">
-                <i class="fas fa-redo"></i> بازی مجدد
-            </button>
-            <button onclick="showGameOptions()" class="secondary">
-                <i class="fas fa-gamepad"></i> بازی جدید
-            </button>
-            <button onclick="showMainMenu()" class="tertiary">
-                <i class="fas fa-home"></i> منوی اصلی
-            </button>
-        </div>
-    </div>
-</div>
+<audio id="clickSound" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
+<audio id="winSound" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+<audio id="loseSound" src="https://www.soundjay.com/button/sounds/button-3.mp3"></audio>
 
 <script>
-// ====== مدیریت وضعیت‌ها ======
-let player = {
-    name: "",
-    symbol: "",
-    points: 0,
-    games: {
-        single: { wins: 0, losses: 0, draws: 0, total: 0 },
-        twoPlayer: { wins: 0, losses: 0, draws: 0, total: 0 }
-    },
-    history: [],
-    settings: {
-        difficulty: "medium",
-        animations: true,
-        sound: true
-    }
-};
+let board = ["", "", "", "", "", "", "", "", ""];
+let player = "X";
+let ai = "O";
+let level = "easy";
+let name = "بازیکن";
+let moveHistory = [];
 
-let board = ["","","","","","","","",""];
-let myTurn = false;
-let gameMode = "";
-let currentSymbol = "X";
-let winningCombination = [];
-let gameActive = true;
-let gameStartTime = 0;
-let gameTimer = null;
-let resultTimeout = null;
+const boardElement = document.getElementById("board");
+const resultElement = document.getElementById("result");
+const nameDisplay = document.getElementById("nameDisplay");
+const clickSound = document.getElementById("clickSound");
+const winSound = document.getElementById("winSound");
+const loseSound = document.getElementById("loseSound");
 
-// ====== جدول برترین‌ها ======
-let leaderboards = {
-    single: JSON.parse(localStorage.getItem('singleLeaderboard')) || []
-};
-
-// ====== توابع نمایش صفحات ======
-function showPage(id){ 
-    document.querySelectorAll('.container').forEach(c=>c.style.display='none'); 
-    document.getElementById(id).style.display='flex'; 
+function renderBoard() {
+    boardElement.innerHTML = "";
+    board.forEach((cell, index) => {
+        const div = document.createElement("div");
+        div.className = "cell";
+        div.textContent = cell;
+        div.addEventListener("click", () => playerMove(index));
+        boardElement.appendChild(div);
+    });
 }
 
-function handleEnterKey(event) {
-    if (event.key === 'Enter') {
-        showGameOptions();
-    }
-}
-
-function showGameOptions(){ 
-    const name = document.getElementById('playerName').value.trim();
-    if(!name) {
-        alert("لطفاً اسم خود را وارد کنید");
+function playerMove(index) {
+    if (board[index] !== "") return;
+    board[index] = player;
+    clickSound.play();
+    moveHistory.push([...board]);
+    renderBoard();
+    if (checkWinner(player)) {
+        resultElement.textContent = `${name} برد!`;
+        winSound.play();
         return;
     }
-    player.name = name;
-    localStorage.setItem('playerName', name);
-    savePlayerData();
-    showPage('gameOptions');
-}
-
-function showMainMenu() {
-    // لغو تایمر نتیجه اگر فعال باشد
-    if(resultTimeout) {
-        clearTimeout(resultTimeout);
-        resultTimeout = null;
+    if (boardFull()) {
+        resultElement.textContent = "مساوی!";
+        return;
     }
-    document.getElementById('resultOverlay').style.display = 'none';
-    showPage('mainMenu');
+    setTimeout(aiMove, 500); // کند کردن حرکات AI
 }
 
-function showProfile() {
-    if(resultTimeout) {
-        clearTimeout(resultTimeout);
-        resultTimeout = null;
+function aiMove() {
+    let move;
+    switch(level) {
+        case "easy": move = easyMove(); break;
+        case "medium": move = mediumMove(); break;
+        case "hard": move = hardMove(); break;
+        case "ai_unbeatable": move = unbeatableMove(); break;
     }
-    document.getElementById('resultOverlay').style.display = 'none';
-    updateProfileDisplay();
-    showPage('profile');
-}
-
-function showLeaderboard() {
-    if(resultTimeout) {
-        clearTimeout(resultTimeout);
-        resultTimeout = null;
-    }
-    document.getElementById('resultOverlay').style.display = 'none';
-    updateLeaderboardDisplay();
-    showPage('leaderboard');
-}
-
-function showSettings() {
-    if(resultTimeout) {
-        clearTimeout(resultTimeout);
-        resultTimeout = null;
-    }
-    document.getElementById('resultOverlay').style.display = 'none';
-    loadSettings();
-    showPage('settings');
-}
-
-// ====== مدیریت تنظیمات ======
-function loadSettings() {
-    document.getElementById('difficulty').value = player.settings.difficulty;
-    document.getElementById('animations').checked = player.settings.animations;
-    document.getElementById('sound').checked = player.settings.sound;
-    document.getElementById('newPlayerName').value = player.name;
-}
-
-function changeDifficulty() {
-    player.settings.difficulty = document.getElementById('difficulty').value;
-    savePlayerData();
-}
-
-function toggleAnimations() {
-    player.settings.animations = document.getElementById('animations').checked;
-    savePlayerData();
-}
-
-function toggleSound() {
-    player.settings.sound = document.getElementById('sound').checked;
-    savePlayerData();
-}
-
-function changePlayerName() {
-    const newName = document.getElementById('newPlayerName').value.trim();
-    if(newName && newName !== player.name) {
-        player.name = newName;
-        localStorage.setItem('playerName', newName);
-        savePlayerData();
-        alert("نام بازیکن با موفقیت تغییر کرد");
+    board[move] = ai;
+    clickSound.play();
+    moveHistory.push([...board]);
+    renderBoard();
+    if (checkWinner(ai)) {
+        resultElement.textContent = `AI برد!`;
+        loseSound.play();
+    } else if (boardFull()) {
+        resultElement.textContent = "مساوی!";
     }
 }
 
-function resetStats() {
-    if(confirm("آیا از ریست کردن تمام آمار و تاریخچه بازی اطمینان دارید؟")) {
-        player.points = 0;
-        player.games = {
-            single: { wins: 0, losses: 0, draws: 0, total: 0 },
-            twoPlayer: { wins: 0, losses: 0, draws: 0, total: 0 }
-        };
-        player.history = [];
-        savePlayerData();
-        updateProfileDisplay();
-        alert("آمار با موفقیت ریست شد");
+function easyMove() {
+    let empty = board.map((v,i) => v===""?i:null).filter(v=>v!==null);
+    return empty[Math.floor(Math.random()*empty.length)];
+}
+
+function mediumMove() {
+    for(let i=0;i<board.length;i++){if(board[i]==="") return i;}
+}
+
+function hardMove() {
+    let empty = board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
+    for(let i of empty){
+        board[i]=ai;
+        if(checkWinner(ai)){board[i]=""; return i;}
+        board[i]="";
     }
-}
-
-function toggleTheme() {
-    document.body.classList.toggle('night-mode');
-    const icon = document.querySelector('.theme-toggle i');
-    if(document.body.classList.contains('night-mode')) {
-        icon.className = 'fas fa-sun';
-    } else {
-        icon.className = 'fas fa-moon';
+    for(let i of empty){
+        board[i]=player;
+        if(checkWinner(player)){board[i]=""; return i;}
+        board[i]="";
     }
+    return empty[Math.floor(Math.random()*empty.length)];
 }
 
-// ====== مدیریت تایمر بازی ======
-function startGameTimer() {
-    gameStartTime = Date.now();
-    clearInterval(gameTimer);
-    gameTimer = setInterval(updateGameTimer, 1000);
-}
-
-function updateGameTimer() {
-    if (!gameActive) return;
-    
-    const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
-    const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-    const seconds = (elapsed % 60).toString().padStart(2, '0');
-    document.getElementById('gameTimer').textContent = `زمان: ${minutes}:${seconds}`;
-}
-
-function stopGameTimer() {
-    clearInterval(gameTimer);
-}
-
-// ====== ساخت تخته ======
-function createBoard(){ 
-    const boardDiv = document.getElementById('board'); 
-    boardDiv.innerHTML="";
-    for(let i=0;i<9;i++){ 
-        const cell = document.createElement('div'); 
-        cell.className="cell"; 
-        cell.id=i; 
-        cell.addEventListener('click',()=>cellClick(i)); 
-        boardDiv.appendChild(cell); 
-    }
-    document.getElementById('resultOverlay').style.display = 'none';
-    gameActive = true;
-}
-
-function updateBoard(){ 
-    // حذف هایلایت از همه خانه‌ها
-    document.querySelectorAll('.cell').forEach(cell => {
-        cell.classList.remove('winning-cell');
-    });
-    
-    // آپدیت مقادیر
-    board.forEach((v,i)=>{ 
-        const cell=document.getElementById(i); 
-        if(cell) {
-            cell.textContent = v === "X" ? "❌" : v === "O" ? "⭕" : "";
-        }
-    });
-    
-    // هایلایت خانه‌های برنده
-    if(player.settings.animations) {
-        winningCombination.forEach(index => {
-            const cell = document.getElementById(index);
-            if(cell) {
-                cell.classList.add('winning-cell');
-            }
-        });
-    }
-}
-
-// ====== بررسی برنده ======
-function checkWinner(boardState){
-    const winComb=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    
-    for(let c of winComb){ 
-        if(boardState[c[0]] && boardState[c[0]]===boardState[c[1]] && boardState[c[0]]===boardState[c[2]]) {
-            winningCombination = c;
-            return {
-                winner: boardState[c[0]],
-                combination: c,
-                type: getWinType(c)
-            };
-        }
-    }
-    
-    if(!boardState.includes("")) {
-        winningCombination = [];
-        return {
-            winner: "draw",
-            combination: [],
-            type: "مساوی"
-        };
-    }
-    
-    winningCombination = [];
-    return null;
-}
-
-function getWinType(combination) {
-    // تشخیص نوع خط برنده
-    if(combination[0] === 0 && combination[2] === 2) return "خط افقی بالا";
-    if(combination[0] === 3 && combination[2] === 5) return "خط افقی وسط";
-    if(combination[0] === 6 && combination[2] === 8) return "خط افقی پایین";
-    if(combination[0] === 0 && combination[2] === 6) return "خط عمودی چپ";
-    if(combination[0] === 1 && combination[2] === 7) return "خط عمودی وسط";
-    if(combination[0] === 2 && combination[2] === 8) return "خط عمودی راست";
-    if(combination[0] === 0 && combination[2] === 8) return "خط مورب اصلی (\\\\)";
-    if(combination[0] === 2 && combination[2] === 6) return "خط مورب فرعی (//)";
-    return "خط برنده";
-}
-
-// ====== پایان بازی ======
-function handleWinner(result){
-    gameActive = false;
-    stopGameTimer();
-    
-    // نمایش خط برنده
-    winningCombination = result.combination;
-    updateBoard();
-    
-    let resultText = "";
-    let pointsChange = 0;
-    let historyEntry = "";
-    let winExplanation = "";
-
-    if(result.winner !== "draw"){
-        if(gameMode === "single") {
-            if(result.winner === player.symbol) {
-                resultText = "🎉 شما برنده شدید!";
-                pointsChange = 3;
-                player.games.single.wins++;
-                historyEntry = `برد از ربات (+${pointsChange} امتیاز)`;
-                winExplanation = `شما با ${result.type} برنده شدید!`;
-                playSound('win');
-            } else {
-                resultText = "🤖 ربات برنده شد!";
-                pointsChange = -5;
-                player.games.single.losses++;
-                historyEntry = `باخت به ربات (${pointsChange} امتیاز)`;
-                winExplanation = `ربات با ${result.type} برنده شد!`;
-                playSound('lose');
-            }
-        } else if(gameMode === "two") {
-            resultText = `🎯 بازیکن ${result.winner} برنده شد!`;
-            historyEntry = `بازی دو نفره - برنده: ${result.winner}`;
-            winExplanation = `بازیکن ${result.winner} با ${result.type} برنده شد!`;
-            playSound('win');
-        }
-    } else {
-        resultText = "🤝 بازی مساوی شد!";
-        if(gameMode === "single") {
-            pointsChange = 1;
-            player.games.single.draws++;
-            historyEntry = `مساوی با ربات (+${pointsChange} امتیاز)`;
-            winExplanation = "هیچکس نتوانست خط کامل کند!";
-        } else {
-            player.games.twoPlayer.draws++;
-            historyEntry = `بازی دو نفره - مساوی`;
-            winExplanation = "هیچکس نتوانست خط کامل کند!";
-        }
-        playSound('draw');
-    }
-
-    // محاسبه امتیاز
-    player.points = Math.max(0, player.points + pointsChange);
-    
-    // اضافه کردن به تاریخچه
-    if(historyEntry) {
-        const gameTime = Math.floor((Date.now() - gameStartTime) / 1000);
-        player.history.unshift({
-            text: historyEntry,
-            type: result.winner === player.symbol ? 'win' : 
-                  result.winner === "draw" ? 'draw' : 'loss',
-            timestamp: new Date().toLocaleDateString('fa-IR'),
-            explanation: winExplanation,
-            time: gameTime
-        });
-        
-        player.history = player.history.slice(0, 10);
-    }
-
-    // نمایش نتیجه بعد از ۵ ثانیه
-    resultTimeout = setTimeout(() => {
-        showGameResult(resultText, winExplanation);
-    }, 5000);
-    
-    savePlayerData();
-}
-
-// تابع جدید برای نمایش نتیجه بازی
-function showGameResult(resultText, winExplanation) {
-    document.getElementById('resultText').textContent = resultText;
-    document.getElementById('winExplanation').textContent = winExplanation;
-    document.getElementById('resultOverlay').style.display = 'flex';
-    
-    // تایمر برای بسته شدن خودکار بعد از ۱۰ ثانیه
-    setTimeout(() => {
-        if(document.getElementById('resultOverlay').style.display === 'flex') {
-            restartSameGame(); // برگشت به بازی جدید
-        }
-    }, 10000);
-}
-
-// ====== مدیریت صدا ======
-function playSound(type) {
-    if(!player.settings.sound) return;
-    
-    // شبیه‌سازی صدا با Web Audio API
-    try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        switch(type) {
-            case 'win':
-                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-                break;
-            case 'lose':
-                oscillator.frequency.setValueAtTime(349.23, audioContext.currentTime); // F4
-                break;
-            case 'draw':
-                oscillator.frequency.setValueAtTime(440.00, audioContext.currentTime); // A4
-                break;
-            case 'move':
-                oscillator.frequency.setValueAtTime(261.63, audioContext.currentTime); // C4
-                break;
-        }
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
-    } catch (e) {
-        console.log('صدا پشتیبانی نمی‌شود');
-    }
-}
-
-// ====== مدیریت داده‌های بازیکن ======
-function savePlayerData() {
-    localStorage.setItem('playerData', JSON.stringify(player));
-    localStorage.setItem('singleLeaderboard', JSON.stringify(leaderboards.single));
-}
-
-function loadPlayerData() {
-    const savedData = localStorage.getItem('playerData');
-    if(savedData) {
-        const data = JSON.parse(savedData);
-        player = {...player, ...data};
-    }
-}
-
-function updateProfileDisplay() {
-    document.getElementById('profileName').textContent = player.name;
-    document.getElementById('totalPoints').textContent = player.points;
-    document.getElementById('totalGames').textContent = player.games.single.total + player.games.twoPlayer.total;
-    
-    const totalWins = player.games.single.wins + player.games.twoPlayer.wins;
-    const totalGames = player.games.single.total + player.games.twoPlayer.total;
-    const winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
-    document.getElementById('winRate').textContent = winRate + '%';
-    
-    const skillPercent = calculateSkillPercentage();
-    document.getElementById('skillPercent').textContent = skillPercent + '%';
-    document.getElementById('skillProgress').style.width = skillPercent + '%';
-    document.getElementById('skillLevel').textContent = `مهارت: ${getSkillLevel(skillPercent)}`;
-    
-    updateRankBadge();
-    updateGameHistory();
-}
-
-function calculateSkillPercentage() {
-    const totalGames = player.games.single.total;
-    if(totalGames === 0) return 0;
-    
-    const winRate = (player.games.single.wins / totalGames) * 100;
-    const drawRate = (player.games.single.draws / totalGames) * 50;
-    
-    return Math.min(100, Math.round(winRate + drawRate));
-}
-
-function getSkillLevel(percent) {
-    if(percent >= 90) return "استاد دوز 🏆";
-    if(percent >= 75) return "حرفه‌ای ⭐";
-    if(percent >= 60) return "متوسط 👍";
-    if(percent >= 40) return "مبتدی 🌱";
-    return "تازه‌کار 🎯";
-}
-
-function updateRankBadge() {
-    const rank = calculateRank();
-    document.getElementById('rankBadge').textContent = `رتبه: ${rank}`;
-}
-
-function calculateRank() {
-    const points = player.points;
-    if(points >= 100) return "طلایی 🥇";
-    if(points >= 50) return "نقره‌ای 🥈";
-    if(points >= 20) return "برنزی 🥉";
-    return "جدید 🎯";
-}
-
-function updateGameHistory() {
-    const historyDiv = document.getElementById('gameHistory');
-    historyDiv.innerHTML = player.history.map((game, index) => `
-        <div class="history-item history-${game.type}">
-            <div><strong>${game.text}</strong></div>
-            <div style="font-size: 12px; color: #666; margin-top: 5px;">${game.explanation}</div>
-            <div style="font-size: 11px; color: #888; margin-top: 3px;">زمان: ${game.time} ثانیه</div>
-            <small>${game.timestamp}</small>
-        </div>
-    `).join('') || '<div style="text-align:center; color:#666; padding:20px;">هنوز بازی‌ای انجام نداده‌اید</div>';
-}
-
-// ====== به‌روزرسانی جدول برترین‌ها ======
-function updateLeaderboard() {
-    let leaderboard = leaderboards.single;
-    let existingPlayer = leaderboard.find(p => p.name === player.name);
-    
-    if(existingPlayer) {
-        existingPlayer.score = player.points;
-    } else {
-        leaderboard.push({name: player.name, score: player.points});
-    }
-    
-    leaderboard.sort((a, b) => b.score - a.score);
-    savePlayerData();
-}
-
-function updateLeaderboardDisplay() {
-    const singleLB = document.getElementById('singleLeaderboard');
-    singleLB.innerHTML = leaderboards.single.slice(0, 10).map((player, index) => `
-        <div class="leaderboard-item">
-            <span class="player-name">
-                ${index < 3 ? ['🥇','🥈','🥉'][index] : (index + 1 + '.')} 
-                ${player.name}
-            </span>
-            <span class="player-score">${player.score} 🏆</span>
-        </div>
-    `).join('') || '<div style="text-align:center; color:#666; padding:20px;">هنوز رکوردی ثبت نشده</div>';
-}
-
-// ====== بازی تک نفره با ربات ======
-function startSinglePlayer(){
-    // لغو تایمرهای قبلی
-    if(resultTimeout) {
-        clearTimeout(resultTimeout);
-        resultTimeout = null;
-    }
-    
-    gameMode="single";
-    player.symbol="X"; 
-    myTurn=true;
-    board=["","","","","","","","",""];
-    winningCombination = [];
-    player.games.single.total++;
-    
-    document.getElementById('gameTitle').textContent = "بازی با ربات";
-    showPage('game');
-    createBoard();
-    updateBoard();
-    document.getElementById('turnMsg').textContent = "نوبت شماست! (شما ❌ هستید)";
-    startGameTimer();
-}
-
-// ====== بازی دو نفره ======
-function startTwoPlayers(){
-    // لغو تایمرهای قبلی
-    if(resultTimeout) {
-        clearTimeout(resultTimeout);
-        resultTimeout = null;
-    }
-    
-    gameMode="two";
-    currentSymbol="X";
-    board=["","","","","","","","",""];
-    winningCombination = [];
-    player.games.twoPlayer.total++;
-    
-    document.getElementById('gameTitle').textContent = "بازی دو نفره";
-    showPage('game');
-    createBoard();
-    updateBoard();
-    document.getElementById('turnMsg').textContent = `نوبت بازیکن ❌`;
-    startGameTimer();
-}
-
-// ====== تعامل با تخته ======
-function cellClick(i){
-    if(!gameActive) return;
-    if(board[i]!=="") return;
-    
-    playSound('move');
-    
-    if(gameMode==="single"){
-        if(myTurn){ 
-            board[i]=player.symbol; 
-            myTurn=false; 
-            updateBoard(); 
-            document.getElementById('turnMsg').textContent = "نوبت ربات...";
-            let winner = checkWinner(board); 
-            if(!winner) {
-                setTimeout(robotMove,800);
-            } else {
-                handleWinner(winner);
-            }
-        }
-    } else if(gameMode==="two"){
-        board[i]=currentSymbol; 
-        updateBoard(); 
-        let winner = checkWinner(board);
-        if(winner) {
-            handleWinner(winner);
-        } else {
-            currentSymbol=currentSymbol==="X"?"O":"X";
-            document.getElementById('turnMsg').textContent = `نوبت بازیکن ${currentSymbol === "X" ? "❌" : "⭕"}`;
-        }
-    }
-}
-
-// ====== حرکت ربات ======
-function robotMove(){
-    if(!gameActive) return;
-    
-    const empty = board.map((v,i)=>v===""?i:-1).filter(v=>v!==-1);
-    if(empty.length===0) return;
-    
-    let move = -1;
-    const difficulty = player.settings.difficulty;
-    
-    if(difficulty === "hard") {
-        move = findBestMove();
-    } else if(difficulty === "medium") {
-        // 70% شانس حرکت هوشمند، 30% شانس حرکت تصادفی
-        if(Math.random() < 0.7) {
-            move = findWinningMove("O") || findWinningMove("X");
-        }
-        if(move === -1) {
-            move = findStrategicMove();
-        }
-    } else {
-        // سطح آسان - بیشتر حرکات تصادفی
-        if(Math.random() < 0.3) {
-            move = findWinningMove("O") || findWinningMove("X");
-        }
-        if(move === -1) {
-            move = empty[Math.floor(Math.random()*empty.length)];
-        }
-    }
-    
-    if(move === -1) {
-        move = empty[Math.floor(Math.random()*empty.length)];
-    }
-    
-    setTimeout(() => {
-        board[move] = "O";
-        myTurn = true;
-        updateBoard();
-        document.getElementById('turnMsg').textContent = "نوبت شماست!";
-        
-        const winner = checkWinner(board);
-        if(winner) handleWinner(winner);
-    }, 1000);
-}
-
-function findBestMove() {
-    // اولویت‌بندی حرکات
-    const priorities = [4, 0, 2, 6, 8, 1, 3, 5, 7]; // مرکز، گوشه‌ها، سپس لبه‌ها
-    
-    // اول برنده شدن
-    let move = findWinningMove("O");
-    if(move !== -1) return move;
-    
-    // سپس جلوگیری از برنده شدن حریف
-    move = findWinningMove("X");
-    if(move !== -1) return move;
-    
-    // سپس حرکت استراتژیک
-    for(let pos of priorities) {
-        if(board[pos] === "") return pos;
-    }
-    
-    return -1;
-}
-
-function findStrategicMove() {
-    const centerAndCorners = [4, 0, 2, 6, 8].filter(index => board[index] === "");
-    if(centerAndCorners.length > 0) {
-        return centerAndCorners[Math.floor(Math.random() * centerAndCorners.length)];
-    }
-    return -1;
-}
-
-function findWinningMove(symbol){
-    for(let i=0;i<9;i++){
+function unbeatableMove() {
+    let bestScore=-Infinity;
+    let move;
+    for(let i=0;i<board.length;i++){
         if(board[i]===""){
-            board[i]=symbol;
-            const winner = checkWinner(board);
+            board[i]=ai;
+            let score=minimax(board,false);
             board[i]="";
-            if(winner && winner.winner === symbol){
-                return i;
-            }
+            if(score>bestScore){bestScore=score; move=i;}
         }
     }
-    return -1;
+    return move;
 }
 
-// ====== بازی مجدد ======
-function restartSameGame(){
-    // لغو تایمر نتیجه
-    if(resultTimeout) {
-        clearTimeout(resultTimeout);
-        resultTimeout = null;
-    }
-    
-    board=["","","","","","","","",""];
-    winningCombination = [];
-    document.getElementById('resultOverlay').style.display = 'none';
-    
-    if(gameMode === "single"){
-        myTurn = true;
-        player.games.single.total++;
-        document.getElementById('turnMsg').textContent = "نوبت شماست! (شما ❌ هستید)";
-    } else if(gameMode === "two"){
-        currentSymbol = "X";
-        player.games.twoPlayer.total++;
-        document.getElementById('turnMsg').textContent = `نوبت بازیکن ❌`;
-    }
-    
-    createBoard();
-    updateBoard();
-    startGameTimer();
-}
+function minimax(boardState,isMaximizing){
+    if(checkWinner(ai)) return 1;
+    if(checkWinner(player)) return -1;
+    if(boardState.every(v=>v!=="")) return 0;
 
-// ====== مقداردهی اولیه ======
-window.onload = function() {
-    const savedName = localStorage.getItem('playerName');
-    if(savedName) {
-        player.name = savedName;
-        document.getElementById('playerName').value = savedName;
-        loadPlayerData();
-        showPage('mainMenu');
-    } else {
-        showPage('lobby');
-    }
-    
-    createBoard();
-    updateLeaderboardDisplay();
-    
-    // بررسی پشتیبانی از service worker برای حالت آفلاین
-    if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(console.error);
+    if(isMaximizing){
+        let best=-Infinity;
+        for(let i=0;i<boardState.length;i++){
+            if(boardState[i]===""){
+                boardState[i]=ai;
+                best=Math.max(best,minimax(boardState,false));
+                boardState[i]="";
+            }
+        }
+        return best;
+    }else{
+        let best=Infinity;
+        for(let i=0;i<boardState.length;i++){
+            if(boardState[i]===""){
+                boardState[i]=player;
+                best=Math.min(best,minimax(boardState,true));
+                boardState[i]="";
+            }
+        }
+        return best;
     }
 }
 
-// ذخیره داده‌ها هنگام بسته شدن صفحه
-window.addEventListener('beforeunload', function(){
-    savePlayerData();
+function checkWinner(p){
+    const wins=[
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
+    return wins.some(line=>line.every(i=>board[i]===p));
+}
+
+function boardFull(){ return board.every(cell=>cell!==""); }
+
+function setLevel(l){
+    level = l;
+    board = ["","","","","","","","",""];
+    resultElement.textContent="";
+    renderBoard();
+}
+
+document.getElementById("changeNameBtn").addEventListener("click", ()=>{
+    let newName = prompt("اسم خود را وارد کنید:", name);
+    if(newName) {name=newName; nameDisplay.textContent=name;}
 });
+
+renderBoard();
 </script>
 </body>
 </html>
