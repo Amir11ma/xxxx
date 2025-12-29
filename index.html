@@ -1,81 +1,186 @@
-<!DOCTYPE html>
+<?php
+/* Template Name: Page Loader + Game (Eitaa MiniApp) */
+?><!DOCTYPE html>
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>وب‌ویو افقی و فول‌اسکرین</title>
+<title>در حال ورود...</title>
 
+<!-- فونت وزیر -->
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+
+<!-- SDK ایتا -->
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 
 <style>
 html, body {
   margin:0;
   padding:0;
-  width:100%;
   height:100%;
   overflow:hidden;
   background:#121621;
-  font-family:sans-serif;
+  font-family:Vazir, sans-serif;
+}
+
+.loader-wrapper {
+  position: fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:#121621;
+  text-align:center;
+  padding:20px;
+  z-index:10;
+}
+
+.loader-title {
+  font-size:32px;
+  color:#00bfff;
+  margin-bottom:30px;
+  text-shadow:0 0 10px #2760fe,0 0 20px #2f71ff;
+}
+
+.glow-loader {
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:linear-gradient(45deg,#2760fe,#2f71ff);
+  animation: glowEffect 2s ease-in-out infinite, spinEffect 5s linear infinite;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.glow-loader span {
+  color:#00bfff;
+  font-size:28px;
+  font-weight:bold;
+  animation: textWaveEffect 1.5s ease-in-out infinite alternate;
+}
+
+.background-particles {
+  position:absolute;
+  inset:-50%;
+  background-image: radial-gradient(circle,#ff6a00 1px,transparent 1px);
+  background-size:20px 20px;
+  animation: moveParticles 10s linear infinite;
+  opacity:0.25;
+  z-index:1;
+}
+
+#game-container {
+  position: fixed;
+  inset:0;
+  display: none;
+  background:#000;
+  z-index:5;
+}
+
+#game-frame {
+  width:100%;
+  height:100%;
+  border:0;
 }
 
 #rotate-hint {
   position:fixed;
   inset:0;
+  background:#121621;
+  color:#00bfff;
   display:flex;
   justify-content:center;
   align-items:center;
-  color:#00bfff;
-  background:#121621;
+  text-align:center;
   font-size:20px;
-  z-index:9999;
+  padding:20px;
+  z-index:99999;
 }
 
-#app-frame {
-  display:none;
-  width:100%;
-  height:100%;
-  border:none;
+/* وقتی افقی شد پیام نره */
+@media screen and (orientation: landscape){
+  #rotate-hint { display:none; }
 }
+
+@keyframes glowEffect{
+  0%{box-shadow:0 0 5px #2760fe,0 0 10px #2f71ff;}
+  50%{box-shadow:0 0 20px #2f71ff,0 0 30px #2760fe;}
+  100%{box-shadow:0 0 5px #2760fe,0 0 10px #2f71ff;}
+}
+
+@keyframes textWaveEffect{
+  0%{text-shadow:0 0 5px #00bfff;}
+  100%{text-shadow:0 0 20px #2f71ff;}
+}
+
+@keyframes moveParticles{
+  0%{transform:translate(0,0) rotate(0deg);}
+  50%{transform:translate(-50%,-50%) rotate(180deg);}
+  100%{transform:translate(0,0) rotate(360deg);}
+}
+
 </style>
 </head>
 
 <body>
 
+<div class="loader-wrapper" id="loader">
+  <h1 class="loader-title">آژانس طراحی سایت پروژه دات آی آر، پلتفرم جامع خدمات دیجیتال</h1>
+  <div class="glow-loader"><span>پروژه دات آی آر</span></div>
+  <div class="background-particles"></div>
+</div>
+
 <div id="rotate-hint">📱 لطفاً گوشی را افقی کنید</div>
 
-<iframe id="app-frame" src="https://www.madkidgames.com/full/jungle-hill-climb-racing" allowfullscreen></iframe>
+<div id="game-container">
+  <iframe id="game-frame" src="" allowfullscreen scrolling="no"></iframe>
+</div>
 
 <script>
-function setLandscape() {
-  // ایتا وب‌اپ SDK
-  if (window.Eitaa && Eitaa.WebApp) {
-    Eitaa.WebApp.requestFullscreen();
-    Eitaa.WebApp.lockOrientation(); // قفل افقی در وب‌ویو ایتا
+document.addEventListener('DOMContentLoaded', function() {
+
+  // آماده‌سازی SDK ایتا
+  if(window.Eitaa && Eitaa.WebApp){
+    Eitaa.WebApp.ready();
   }
-}
 
-// بررسی وضعیت چرخش
-function checkOrientation() {
-  const hint = document.getElementById("rotate-hint");
-  const frame = document.getElementById("app-frame");
-  if(window.matchMedia("(orientation: landscape)").matches) {
-    hint.style.display = "none";
-    frame.style.display = "block";
-  } else {
-    hint.style.display = "flex";
-    frame.style.display = "none";
+  // تابع فول‌اسکرین و قفل افقی داخل ایتا
+  function enableFullscreenAndLandscape(){
+    if(window.Eitaa && Eitaa.WebApp){
+      Eitaa.WebApp.requestFullscreen();
+      Eitaa.WebApp.lockOrientation();
+    }
   }
-}
 
-// بعد از اولین لمس کاربر
-document.addEventListener("touchstart", setLandscape, {once:true});
-document.addEventListener("click", setLandscape, {once:true});
+  // لمس یا کلیک اولیه برای موبایل
+  document.addEventListener("touchstart", enableFullscreenAndLandscape, {once:true});
+  document.addEventListener("click", enableFullscreenAndLandscape, {once:true});
 
-window.addEventListener("orientationchange", checkOrientation);
-window.addEventListener("resize", checkOrientation);
+  // بررسی تغییر جهت
+  function checkOrientation(){
+    const hint = document.getElementById("rotate-hint");
+    if(window.matchMedia("(orientation: landscape)").matches){
+      hint.style.display="none";
+    } else {
+      hint.style.display="flex";
+    }
+  }
+  window.addEventListener("orientationchange", checkOrientation);
+  window.addEventListener("resize", checkOrientation);
 
-// بارگذاری اولیه
-checkOrientation();
+  // بعد از لودر
+  setTimeout(function(){
+    document.getElementById('loader').style.display='none';
+    var gameFrame = document.getElementById('game-frame');
+    gameFrame.src="https://www.madkidgames.com/full/jungle-hill-climb-racing";
+    document.getElementById('game-container').style.display='block';
+    enableFullscreenAndLandscape();
+    checkOrientation();
+  },8500);
+
+});
 </script>
 
 </body>
