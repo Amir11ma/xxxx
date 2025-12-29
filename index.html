@@ -3,35 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>فول اسکرین و افقی</title>
+<title>وب‌ویو افقی و فول‌اسکرین</title>
+
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#121621;
+  font-family:sans-serif;
+}
+
+#rotate-hint {
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#00bfff;
+  background:#121621;
+  font-size:20px;
+  z-index:9999;
+}
+
+#app-frame {
+  display:none;
+  width:100%;
+  height:100%;
+  border:none;
+}
+</style>
 </head>
+
 <body>
-<h1 style="text-align:center;color:#00bfff;">سلام! این صفحه فول‌اسکرین و افقی است.</h1>
+
+<div id="rotate-hint">📱 لطفاً گوشی را افقی کنید</div>
+
+<iframe id="app-frame" src="https://www.madkidgames.com/full/jungle-hill-climb-racing" allowfullscreen></iframe>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-
-  // اطمینان از آماده بودن SDK
+function setLandscape() {
+  // ایتا وب‌اپ SDK
   if (window.Eitaa && Eitaa.WebApp) {
-    Eitaa.WebApp.ready();
-
-    // فول‌اسکرین کردن
     Eitaa.WebApp.requestFullscreen();
-
-    // قفل چرخش صفحه به افقی
-    Eitaa.WebApp.lockOrientation();
+    Eitaa.WebApp.lockOrientation(); // قفل افقی در وب‌ویو ایتا
   }
+}
 
-  // در موبایل‌ها بهتر است بعد از اولین لمس کاربر اجرا شود
-  document.addEventListener("touchstart", function() {
-    if (window.Eitaa && Eitaa.WebApp) {
-      Eitaa.WebApp.requestFullscreen();
-      Eitaa.WebApp.lockOrientation();
-    }
-  }, { once: true });
+// بررسی وضعیت چرخش
+function checkOrientation() {
+  const hint = document.getElementById("rotate-hint");
+  const frame = document.getElementById("app-frame");
+  if(window.matchMedia("(orientation: landscape)").matches) {
+    hint.style.display = "none";
+    frame.style.display = "block";
+  } else {
+    hint.style.display = "flex";
+    frame.style.display = "none";
+  }
+}
 
-});
+// بعد از اولین لمس کاربر
+document.addEventListener("touchstart", setLandscape, {once:true});
+document.addEventListener("click", setLandscape, {once:true});
+
+window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("resize", checkOrientation);
+
+// بارگذاری اولیه
+checkOrientation();
 </script>
+
 </body>
 </html>
